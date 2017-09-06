@@ -1,0 +1,28 @@
+---
+- hosts: spark_node1
+  user: vagrant
+  vars:
+    ips:
+      - "localhost"
+  tasks:
+    - name: install expect
+      yum: name=expect state=present
+      sudo: yes
+
+    - name: generate ssh key
+      shell: >-
+        ssh-keygen -t rsa -N "" -f .ssh/id_rsa
+        executable=/bin/bash
+
+    - name: register ssh key
+      shell: >-
+        echo "expect -c \"" >> ssh_copy_id.sh &&
+        echo "spawn ssh-copy-id -i .ssh\/id_rsa.pub vagrant@{{ item }}" >> ssh_copy_id.sh &&
+        echo "expect (yes/no)?" >> ssh_copy_id.sh &&
+        echo "send \\\"yes\\n\\\"" >> ssh_copy_id.sh &&
+        echo "expect password:" >> ssh_copy_id.sh &&
+        echo "send \\\"vagrant\\n\\\"" >> ssh_copy_id.sh &&
+        echo "interact" >> ssh_copy_id.sh &&
+        echo "\"" >> ssh_copy_id.sh &&
+        sh ssh_copy_id.sh
+      with_items: ips

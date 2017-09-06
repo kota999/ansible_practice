@@ -1,0 +1,6 @@
+pkgs:
+  - gcc
+  - libnl-devel
+  - kernel-devel
+  - openssl-devel
+  - ipvsadm

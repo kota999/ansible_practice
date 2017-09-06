@@ -1,0 +1,6 @@
+hive_src: "apache-hive-0.13.1-bin"
+hive_filename: "{{ hive_src }}.tar.gz"
+hive_url: "http://ftp.tsukuba.wide.ad.jp/software/apache/hive/hive-0.13.1/{{ hive_filename }}"
+
+hive_conf: "{{ hive_src }}/conf"
+

@@ -1,0 +1,12 @@
+requirements:
+  - curl
+  - zlib-devel
+  - openssl-devel
+  - sqlite
+  - sqlite-devel
+  - ncurses
+  - ncurses-devel
+  - readline
+  - readline-devel
+  - libffi
+  - libffi-devel

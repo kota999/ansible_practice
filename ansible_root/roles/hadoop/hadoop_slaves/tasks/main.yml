@@ -1,0 +1,18 @@
+- name: set environment for hadoop core
+  copy: src={{ hadoop_core_env }} dest={{ src_dir }}/{{ hadoop_conf }}/{{ hadoop_core_env }} owner={{ account }} group={{ account }} mode=0644
+  sudo: yes
+
+- name: set environment for hadoop hdfs
+  copy: src={{ hadoop_hdfs_env }} dest={{ src_dir }}/{{ hadoop_conf }}/{{ hadoop_hdfs_env }} owner={{ account }} group={{ account }} mode=0644
+  sudo: yes
+
+- name: set environment for hadoop mapred
+  copy: src={{ hadoop_mapred_env }} dest={{ src_dir }}/{{ hadoop_conf }}/{{ hadoop_mapred_env }} owner={{ account }} group={{ account }} mode=0644
+  sudo: yes
+
+- name: hdfs format
+  shell: >-
+    source $HOME/.zshenv &&
+    rm -Rf /tmp/hadoop* &&
+    hadoop namenode -format
+    executable=/bin/bash

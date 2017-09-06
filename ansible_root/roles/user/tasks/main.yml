@@ -1,0 +1,10 @@
+---
+
+- name: install zsh
+  yum: name=zsh state=installed
+  sudo: yes
+
+- name: change default shell to zsh from bash
+  user: name={{ account }} shell={{ shell }}
+  sudo: yes
+

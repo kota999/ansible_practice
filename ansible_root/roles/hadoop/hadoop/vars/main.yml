@@ -1,0 +1,8 @@
+hadoop_src: "hadoop-2.5.0"
+hadoop_filename: "{{ hadoop_src }}.tar.gz"
+hadoop_url: "http://ftp.riken.jp/net/apache/hadoop/common/{{ hadoop_src }}/{{ hadoop_filename }}"
+hadoop_conf: "hadoop-2.5.0/etc/hadoop/"
+
+hadoop_core_env: "core-site.xml"
+hadoop_hdfs_env: "hdfs-site.xml"
+hadoop_yarn_env: "yarn-site.xml"

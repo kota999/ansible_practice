@@ -1,0 +1,24 @@
+- name: install x11
+  yum: name=xauth state=installed
+  sudo: yes
+
+- name: download package - {{ filename }}
+  get_url: url={{ url }} dest={{ src_dir }}
+  sudo: yes
+
+- name: install {{ src }}
+  shell: >-
+    if ! [ -e {{ src_dir }}/{{ src }} ]; then
+    cd {{ src_dir }} &&
+    tar zxvf {{ filename }} ;
+    fi
+    executable=/bin/bash
+  sudo: yes
+
+- name: set environment {{ src }}
+  shell: >-
+    env=`cat {{ home }}/.zshenv | grep "{{ src }}" | wc | awk '{print $1}'` ;
+    if [ $env -eq 0 ]; then
+    echo "export PATH=\$PATH:{{ src_dir }}/{{ src }}/bin" >> {{ home }}/.zshenv ;
+    fi
+    executable=/bin/bash

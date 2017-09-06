@@ -1,0 +1,14 @@
+- name: set environment for spark cluster master
+  copy: src={{ spark_master_env }} dest={{ src_dir }}/{{ spark_conf }}/{{ spark_master_env }} owner=root group=root mode=0645
+  sudo: yes
+
+- name: set environment for spark cluster slaves
+  copy: src={{ spark_slaves_env }} dest={{ src_dir }}/{{ spark_conf }}/{{ spark_slaves_env }} owner=root group=root mode=0644
+  sudo: yes
+
+- name: source spark master configuration
+  shell: >-
+    cd {{ src_dir }}/{{ spark_conf }} &&
+    ./spark-env.sh
+    executable=/bin/bash
+  sudo: yes

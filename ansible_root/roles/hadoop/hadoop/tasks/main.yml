@@ -1,0 +1,48 @@
+- name: install open-jdk7
+  yum: name=java-1.7.0-openjdk state=installed
+  sudo: yes
+
+- name: install open-jdk7-devel
+  yum: name=java-1.7.0-openjdk-devel state=installed
+  sudo: yes
+
+- name: download hadoop src
+  get_url: url={{ hadoop_url }} dest={{ src_dir }}
+  sudo: yes
+
+- name: install hadoop
+  shell: >-
+    if ! [ -e {{ src_dir }}/{{ hadoop_src }} ]; then
+    cd {{ src_dir }} &&
+    tar zxvf {{ hadoop_filename }} &&
+    chown {{ account }}. {{ hadoop_src }} ;
+    fi
+    executable=/bin/bash
+  sudo: yes
+
+- name: set hadoop environment
+  shell: >-
+    echo "export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.71.x86_64" >> $HOME/.zshenv &&
+    echo "export HADOOP_HOME={{ src_dir }}/{{ hadoop_src }}" >> $HOME/.zshenv &&
+    echo "export HADOOP_COMMON_LIB_NATIVE_DIR=\$HADOOP_HOME/lib/native" >> $HOME/.zshenv &&
+    echo "export HADOOP_OPTS=\"-Djava.library.path=\$HADOOP_HOME/lib/native\"" >> $HOME/.zshenv &&
+    echo "export PATH=\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin:\$JAVA_HOME/bin:\$PATH" >> $HOME/.zshenv
+    executable=/bin/bash
+
+- name: set environment for hadoop core
+  copy: src={{ hadoop_core_env }} dest={{ src_dir }}/{{ hadoop_conf }}/{{ hadoop_core_env }} owner={{ account }} group={{ account }} mode=0644
+  sudo: yes
+
+- name: set environment for hadoop hdfs
+  copy: src={{ hadoop_hdfs_env }} dest={{ src_dir }}/{{ hadoop_conf }}/{{ hadoop_hdfs_env }} owner={{ account }} group={{ account }} mode=0644
+  sudo: yes
+
+- name: set environment for hadoop yarn
+  copy: src={{ hadoop_yarn_env }} dest={{ src_dir }}/{{ hadoop_conf }}/{{ hadoop_yarn_env }} owner={{ account }} group={{ account }} mode=0644
+  sudo: yes
+
+- name: hdfs format
+  shell: >-
+    source $HOME/.zshenv &&
+    hadoop namenode -format
+    executable=/bin/bash

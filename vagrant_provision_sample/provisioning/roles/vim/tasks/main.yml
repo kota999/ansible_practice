@@ -1,0 +1,22 @@
+---
+- name: git clone vimenv
+  git: repo={{ vimenv_url }} dest={{ vimenv_dir }} version={{ branch }} accept_hostkey=yes
+
+- name: git clone vim-build
+  git: repo={{ vimbuild_url }} dest={{ vimbuild_dir }} version={{ branch }} accept_hostkey=yes
+
+- name: set my vim
+  shell: >-
+    INSTALLED=`ls {{ vimenv_dir }}/versions` ;
+    if [ "$INSTALLED" = "" ] ; then
+    echo "export PATH={{ vimenv_dir }}/bin/:\$PATH" >> {{ home }}/.zshenv &&
+    echo "eval \"\$(vimenv init -)\"" >> {{ home }}/.zshenv &&
+    source {{ home }}/.zshenv &&
+    vimenv install -t {{ vim_version }} &&
+    vimenv global {{ vim_version }} ;
+    fi ;
+    if ! [ -e {{ home }}/.vimrc ] ; then
+    cp {{ dotfiles_dir }}/vim/vimrc {{ home }}/.vimrc &&
+    tar zxvf {{ dotfiles_dir }}/vim/vim.tar.gz ;
+    fi
+    executable=/bin/bash

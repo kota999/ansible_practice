@@ -1,0 +1,10 @@
+---
+- hosts: ansible_test
+  vars_files:
+    - vars/vars.yml
+  user: vagrant
+  roles:
+    - user
+    - dotfiles
+    - tmux
+    - pyenv/pyenv

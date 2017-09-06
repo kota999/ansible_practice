@@ -1,0 +1,5 @@
+vimenv_url: "git://github.com/raa0121/vimenv.git"
+vimenv_dir: "{{ home }}/.vimenv"
+vimbuild_url: "git://github.com/yasu-n/vim-build.git"
+vimbuild_dir: "{{ home }}/.vimenv/plugins/vim-build"
+vim_version: "v7.4.827"

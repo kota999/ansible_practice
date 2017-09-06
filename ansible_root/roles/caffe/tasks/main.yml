@@ -1,0 +1,167 @@
+---
+- name: yum install requirements modules
+  yum: name={{ item }} state=latest
+  sudo: yes
+  with_items: yum_pkgs
+
+- name: conda install requirements modules
+  shell: >-
+    source ${HOME}/.pyenv/versions/{{ python.version }}/envs/{{ python.anaconda_env_name }}/bin/activate {{ python.anaconda_env_name }} &&
+    echo y | conda install {{ item }}
+    executable=/bin/zsh
+  with_items: conda_pkgs
+
+- name: pip install requirements modules
+  shell: >-
+    source ${HOME}/.pyenv/versions/{{ python.version }}/envs/{{ python.anaconda_env_name }}/bin/activate {{ python.anaconda_env_name }} &&
+    pip install {{ item }}
+    executable=/bin/zsh
+  with_items: pip_pkgs
+
+- name: download boost 1.55
+  get_url: url="http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz" dest={{ opt_dir }}
+
+- name: install boost 1.55
+  shell: >-
+    if ! [ -e /usr/local/lib/libboost_python.a ] ; then
+      cd {{ opt_dir }} &&
+      tar xvf boost_1_55_0.tar.gz &&
+      cd boost_1_55_0 &&
+      ./bootstrap.sh &&
+      sudo ./b2 install
+    fi
+    executable=/bin/zsh
+
+- name: download opencv source
+  get_url: url="http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.10/opencv-2.4.10.zip" dest={{ opt_dir }}
+
+- name: install opencv
+  shell: >-
+    if ! [ -e /usr/local/lib/libopencv_core.so ] ; then
+      cd {{ opt_dir }} &&
+      unzip opencv-2.4.10.zip &&
+      cd opencv-2.4.10 &&
+      mkdir -p build &&
+      cd build &&
+      cmake ../ -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_EXAMPLES=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DINSTALL_PYTHON_EXAMPLES=ON &&
+      make -j &&
+      sudo make install
+    fi
+    executable=/bin/zsh
+
+- name: download autoconf 2.69
+  get_url: url="http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz" dest={{ opt_dir }}
+
+- name: install autoconf 2.69
+  shell: >-
+    INSTALLED=`which autoconf 2>/dev/null` ;
+    if [ "${INSTALLED}" = "" ] ; then
+      cd {{ opt_dir }} &&
+      tar xvf autoconf-2.69.tar.gz &&
+      cd autoconf-2.69 &&
+      ./configure --prefix=/usr &&
+      make -j &&
+      sudo make install
+    fi
+    executable=/bin/zsh
+
+- name: download automake-1.14
+  get_url: url="http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz" dest={{ opt_dir }}
+
+- name: install automake-1.14
+  shell: >-
+    INSTALLED=`which automake-1.14 2>/dev/null` ;
+    if [ "${INSTALLED}" = "" ] ; then
+      cd {{ opt_dir }} &&
+      tar xvf automake-1.14.tar.gz &&
+      cd automake-1.14 &&
+      ./configure --prefix=/usr &&
+      make -j &&
+      sudo make install
+    fi
+    executable=/bin/zsh
+
+- name: git clone glog
+  git: repo="https://github.com/google/glog.git" dest={{ opt_dir }}/glog version={{ branch }} accept_hostkey=yes
+
+- name: install latest glog
+  shell: >-
+    if ! [ -e /usr/local/lib/libglog.a ] ; then
+      cd {{ opt_dir }}/glog &&
+      ./configure &&
+      make -j &&
+      sudo make install
+      echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.zshenv
+    fi
+    executable=/bin/zsh
+
+- name: git clone gflags
+  git: repo="https://github.com/schuhschuh/gflags.git" dest={{ opt_dir }}/gflags version={{ branch }} accept_hostkey=yes
+
+- name: install latest gflags
+  shell: >-
+    if ! [ -e /usr/local/lib/libgflags.so ] ; then
+      cd {{ opt_dir }}/gflags &&
+      mkdir build &&
+      cd build &&
+      export CXXFLAGS="-fPIC" &&
+      cmake .. &&
+      make VERBOSE=1 &&
+      make -j &&
+      sudo make install
+    fi
+    executable=/bin/zsh
+
+- name: git clone protobuf
+  git: repo="https://github.com/google/protobuf.git" dest={{ opt_dir }}/protobuf version={{ branch }} accept_hostkey=yes
+
+- name: install latest protobuf
+  shell: >-
+    INSTALLED=`which protoc 2>/dev/null` ;
+    if [ "${INSTALLED}" = "" ] ; then
+      cd {{ opt_dir }}/protobuf &&
+      ./autogen.sh &&
+      ./configure &&
+      make -j &&
+      sudo make install
+    fi
+    executable=/bin/zsh
+
+- name: install latest protobuf for python
+  shell: >-
+    source ${HOME}/.pyenv/versions/{{ python.version }}/envs/{{ python.anaconda_env_name }}/bin/activate {{ python.anaconda_env_name }} &&
+    INSTALLED=`conda list | grep protobuf` ;
+    if [ "${INSTALLED}" = "" ] ; then
+      cd {{ opt_dir }}/protobuf/python &&
+      python setup.py build &&
+      python setup.py test &&
+      python setup.py install
+    fi
+    executable=/bin/zsh
+
+- name: git clone caffe
+  git: repo="https://github.com/BVLC/caffe.git" dest={{ opt_dir }}/caffe version={{ branch }} accept_hostkey=yes
+
+- name: copy Makefile.config
+  template: src=Makefile.config.j2 dest={{ opt_dir }}/caffe/Makefile.config mode=0644
+
+- name: isntall caffe
+  shell: >-
+    if [ "${CAFFE_ROOT}" = "" ] ; then
+      cd {{ opt_dir }}/caffe &&
+      make all -j &&
+      make test -j &&
+      make runtest -j &&
+      echo "export CAFFE_ROOT={{ opt_dir }}/caffe" >> ${HOME}/.zshenv
+    fi
+    executable=/bin/zsh
+
+- name: install pycaffe
+  shell: >-
+    if [ "${PYCAFFE_PATH}" = "" ] ; then
+      cd {{ opt_dir }}/caffe &&
+      make pycaffe -j &&
+      echo "export PYCAFFE_PATH=\$CAFFE_ROOT/python" >> ${HOME}/.zshenv &&
+      echo "export PYTHONPATH=\$PYCAFFE_PATH:\$PYTHONPATH"
+    fi
+    executable=/bin/zsh

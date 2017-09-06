@@ -1,0 +1,44 @@
+- name: install open-jdk7
+  yum: name=java-1.7.0-openjdk state=installed
+  sudo: yes
+
+- name: install open-jdk7-devel
+  yum: name=java-1.7.0-openjdk-devel state=installed
+  sudo: yes
+
+- name: install cdh5 repo
+  yum: name={{ cdh5_repo }} state=installed
+  sudo: yes
+
+- name: install cdh5 rpm
+  shell: >-
+    rpm --import {{ cdh5_rpm }}
+    executable=/bin/bash
+  sudo: yes
+
+- name: copy typesafe repository conf
+  copy: src={{ typesafe_conf_filename }} dest=/etc/yum.repos.d/{{ typesafe_conf_filename }} owner=root group=root mode=0644
+  sudo: yes
+
+- name: install typesafe-safe for scala
+  yum: name=typesafe-stack state=installed
+  sudo: yes
+
+- name: download spark src
+  get_url: url={{ spark_url }} dest={{ src_dir }}
+  sudo: yes
+
+- name: install spark
+  shell: >-
+    if ! [ -e {{ src_dir }}/{{ spark_src }} ]; then
+    cd {{ src_dir }} &&
+    tar zxvf {{ spark_filename }} ;
+    fi
+    executable=/bin/bash
+  sudo: yes
+
+- name: set spark environment
+  shell: >-
+    echo "export SPARK_HOME={{ src_dir }}/{{ spark_src }}" >> $HOME/.zshenv &&
+    echo "export PATH=\$PATH:{{ src_dir }}/{{ spark_src }}/bin" >> $HOME/.zshenv
+    executable=/bin/bash

@@ -1,0 +1,14 @@
+- name: install numpy
+  yum: name=numpy state=latest
+  sudo: yes
+
+- name: install scipy
+  yum: name=scipy state=latest
+  sudo: yes
+
+- name: install ipython
+  pip: name=ipython[all] state=latest
+
+- name: install pip pkgs
+  pip: name={{ item }} state=latest
+  with_items: pip_pkgs

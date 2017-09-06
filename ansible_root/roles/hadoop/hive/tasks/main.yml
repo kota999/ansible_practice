@@ -1,0 +1,30 @@
+- name: download hive src
+  get_url: url={{ hive_url }} dest={{ src_dir }}
+  sudo: yes
+
+- name: install hive
+  shell: >-
+    if ! [ -e {{ src_dir }}/{{ hive_src }} ]; then
+    cd {{ src_dir }} &&
+    tar zxvf {{ hive_filename }} &&
+    chown -R {{ account }}. {{ hive_src }} ;
+    fi
+    executable=/bin/bash
+  sudo: yes
+
+- name: set hive environment
+  shell: >-
+    echo "export HIVE_HOME={{ src_dir }}/{{ hive_src }}" >> $HOME/.zshenv &&
+    echo "export PATH=\$HIVE_HOME/bin:\$PATH" >> $HOME/.zshenv
+    executable=/bin/bash
+
+- name: set hive configuration
+  shell: >-
+    source $HOME/.zshenv &&
+    cd {{ src_dir }}/{{ hive_conf }} &&
+    cp -p hive-log4j.properties.template log4j.properties &&
+    cp -p hive-env.sh.template hive-env.sh &&
+    chmod 755 hive-env.sh &&
+    cp -p hive-exec-log4j.properties.template hive-exec-log4j.properties &&
+    cp -p hive-default.xml.template hive-site.xml
+    executable=/bin/bash

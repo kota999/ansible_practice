@@ -1,0 +1,16 @@
+account: "vagrant"
+shell: "/bin/zsh"
+home: "/home/{{ account }}"
+work_dir: "{{ home }}/local"
+src_dir: "/usr/local/src"
+opt_dir: "{{ home }}/opt"
+branch: "master"
+dotfiles_dir: "{{ work_dir }}/dotfiles"
+
+python:
+  v: "2.7"
+  version: "2.7.3"
+  # version: "anaconda3-2.4.0"
+  # anaconda_python_version: "2.7"
+  # anaconda_env_name: "py2"
+venvname: "lab"

@@ -1,0 +1,39 @@
+yum_pkgs:
+ - cmake
+ - pkgconfig
+ - gtk2-devel
+ - python-devel
+ - numpy
+ - tbb-devel
+ - libpng-devel
+ - leveldb-devel
+ - snappy-devel
+ - hdf5-devel
+ - lmdb-devel
+ - atlas-sse3-devel
+
+pip_pkgs:
+ - leveldb
+
+conda_pkgs:
+ - cython
+ - numpy
+ - scipy
+ - scikit-image
+ - scikit-learn
+ - matplotlib
+ - ipython-notebook
+ - h5py
+ - networkx
+ - nose
+ - pandas
+ - python-dateutil
+ - python-gflags
+ - pyyaml
+ - pillow
+ - six
+ - pydot
+
+blas:
+  inc: "/usr/include/atlas-x86_64-sse3"
+  lib: "/usr/lib64/atlas-sse3"

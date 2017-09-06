@@ -1,0 +1,7 @@
+---
+- hosts: servers
+  vars_files:
+    - vars/vars.yml
+  user: vagrant
+  roles:
+    - vim

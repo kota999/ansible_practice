@@ -1,0 +1,7 @@
+pythonbrew:
+  v: "{{ python.v }}"
+  version: "{{ python.version }}"
+  root: "{{ home }}/.pythonbrew"
+  bashrc_path: "{{ home }}/.pythonbrew/etc/bashrc"
+  venvname: "{{ venvname }}"
+  sitepackages: "{{ home }}/.pythonbrew/venvs/Python-{{ python.version }}/{{ venvname }}/lib/python{{ python.v }}/site-packages"

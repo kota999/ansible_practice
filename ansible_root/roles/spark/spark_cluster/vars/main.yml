@@ -1,0 +1,16 @@
+scala_src: "scala-2.9.3"
+scala_filename: "{{ scala_src }}.tgz"
+scala_url: "https://www.scala-lang.org/files/archives/{{ scala_filename }}"
+
+cdh5_repo: "http://archive.cloudera.com/cdh5/one-click-install/redhat/6/x86_64/cloudera-cdh-5-0.x86_64.rpm"
+cdh5_rpm: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera"
+
+typesafe_conf_filename: "typesafe.repo"
+
+spark_src: "spark-1.1.0-bin-hadoop2.4"
+spark_conf: "{{ spark_src }}/conf"
+spark_filename: "{{ spark_src }}.tgz"
+spark_url: "http://d3kbcqa49mib13.cloudfront.net/{{ spark_filename }}"
+
+spark_master_env: "spark-env.sh"
+spark_slaves_env: "slaves"

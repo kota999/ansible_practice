@@ -1,0 +1,19 @@
+---
+- name: install requirement packages for python
+  yum: name={{ item }} state=installed
+  sudo: yes
+  with_items: requirements
+
+- name: install python
+  shell: >-
+    source ${HOME}/.zshenv ;
+    VERSION=`pyenv versions | grep {{ python.version }}`;
+    if [ "${VERSION}" = "" ] ; then
+        pyenv install {{ python.version }} &&
+        pyenv rehash &&
+        pyenv global {{ python.version }} &&
+        pyenv rehash &&
+        echo "export PYENV_VIRTUALENV_DISABLE_PROMPT=1" >> ${HOME}/.zshenv
+    fi
+    executable=/bin/bash
+

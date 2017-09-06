@@ -1,0 +1,5 @@
+requirements:
+ - bzip2-devel
+ - readline-devel
+ - openssl
+ - openssl-devel

@@ -1,0 +1,58 @@
+---
+- name: yum update
+  yum: name=* state=latest
+  sudo: yes
+
+- name: add yum repositories
+  yum: name={{ item }} state=present
+  sudo: yes
+  with_items: yum_repos
+
+- name: install python-selinux
+  yum: name=libselinux-python state=latest
+  sudo: yes
+
+- name: disable selinux
+  selinux: state=disabled
+  sudo: yes
+
+- name: disable iptables
+  service: name=iptables state=stopped enabled=no
+  sudo: yes
+
+- name: install git
+  yum: name=git state=installed
+  sudo: yes
+
+- name: install basic develop tools
+  yum: name={{ item }} state=installed
+  sudo: yes
+  with_items: dev_tools
+
+- name: install httpd
+  yum: name=httpd state=installed
+  sudo: yes
+  notify: start and enable httpd
+
+- name: install packages for compiling vim
+  yum: name={{ item }} state=installed
+  sudo: yes
+  with_items: vim_pkgs
+
+- name: hg clone vim src
+  hg: repo=https://vim.googlecode.com/hg dest={{ src_dir }}/vim revision=stable purge=yes
+  sudo: yes
+
+- name: compile vim
+  shell: >-
+    if ! [ -e {{ src_dir }}/vim/vim_installed.txt ] ; then
+    cd {{ src_dir }} &&
+    cd vim &&
+    ./configure --enable-multibyte --with-features=huge --disable-selinux --prefix=/usr/local --enable-luainterp=yes --with-lua-prefix=/usr &&
+    make &&
+    make install &&
+    touch vim_installed.txt ;
+    fi
+    executable=/bin/bash
+  sudo: yes
+

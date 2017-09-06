@@ -1,0 +1,27 @@
+---
+- name: conda update
+  conda: name=conda state=latest
+
+- name: conda create python {{ python.anaconda_python_version }}
+  shell: >-
+    source ${HOME}/.zshenv ;
+    VERSION=`pyenv versions | grep {{ python.anaconda_env_name }}` ;
+    if [ "${VERSION}" = "" ] ; then
+      echo y | conda create -n {{ python.anaconda_env_name }} python={{ python.anaconda_python_version }} &&
+      pyenv rehash &&
+      pyenv global {{ python.version }}/envs/{{ python.anaconda_env_name }} &&
+      pyenv rehash ;
+    fi
+    executable=/bin/bash
+
+- name: install conda modules
+  shell: >-
+    source ${HOME}/.pyenv/versions/{{ python.version }}/envs/{{ python.anaconda_env_name }}/bin/activate {{ python.anaconda_env_name }} &&
+    echo y | conda install {{ item }}
+    executable=/bin/zsh
+  with_items: conda_pkgs
+
+- name: install pip modules
+  pip: name={{ item }} state=latest
+  with_items: pip_pkgs
+

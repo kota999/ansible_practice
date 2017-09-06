@@ -1,0 +1,15 @@
+pip_pkgs:
+ - bpython
+
+conda_pkgs:
+ - cython
+ - numpy
+ - scipy
+ - ipython-notebook
+ - flask
+ - pandas
+ - matplotlib
+ - pillow
+ - scikit-learn
+ - scikit-image
+
